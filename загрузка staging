@@ -219,3 +219,32 @@ insert into kdz_7_staging.weather (icao_code, local_datetime, air_temp, p0_stati
 select *
 from kdz_7_staging.weather
 ;
+
+--шаг 2.5. Обновление времени загрузки данных
+delete from kdz_7_etl.load_flights 
+where exists (select 1 from kdz_7_etl.load_flights)
+;
+
+delete from kdz_7_etl.load_weather
+where exists (select 1 from kdz_7_etl.load_weather)
+;
+
+insert into kdz_7_etl.load_flights (loaded_ts)
+	select ts2
+	from kdz_7_etl.load_min_max_flights
+	where exists (select 1 from kdz_7_etl.load_min_max_flights)
+;
+
+select *
+from kdz_7_etl.load_flights
+;
+
+insert into kdz_7_etl.load_weather (loaded_ts)
+	select ts2
+	from kdz_7_etl.load_min_max_weather
+	where exists (select 1 from kdz_7_etl.load_min_max_weather)
+;
+
+select *
+from kdz_7_etl.load_weather
+;
